@@ -17,3 +17,6 @@ def Hanno(n,a,b,c):
 
 Hanno(Level,'A','B','C')
 ## use functions
+
+
+## List, tuple and dict:
