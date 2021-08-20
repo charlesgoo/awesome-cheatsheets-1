@@ -135,7 +135,9 @@ def f2(in1,in2):
     in2=int(in2)
     return in1*10+in2
 
+from functools import reduce
 result3=reduce(f2,list1)
+## import reduce first!!
 ## logic of reduce:
 ## the function for reduce MUST accept 2 inputs
 ## list1=[a,b,c,d]
@@ -145,8 +147,14 @@ print(result3)
 
 
 
-## grep, awk and sed
+## to apply shell script:
 import subprocess as sp
-Command="ls -l | awk '{print $NF}'"
+Command="sh /home/guchong/script.sh"
+## Command here can be a command or a shell script
 sp.call(Command,shell=True)
 
+### 3 types of import files:
+## import subprocess as sp 		## the string after 'as' is like the alias of the module
+## import math	
+## from math import *			##like 'import math'
+## from support import print_func 	## just import a part of the module
