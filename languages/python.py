@@ -90,10 +90,10 @@ for k,v in dict1.items():    ## for key-value pairs
 for x,y in [(1,2),(3,4),(5,6)]:
     print(x,y)
 
-## list generator:
+## list with for and if:
 list3=[ x*x for x in range(1,20) if x%2 ==0 ]
 print('list3=',list3)
-list4=[m+n for m in 'abc' for n in 'wxyz']
+list4=[ m+n for m in 'abc' for n in 'wxyz' ]
 print('list4=',list4)
 ## string1 + string2 = string1string2
 ## str1 * 2 = str1str1
@@ -102,13 +102,40 @@ print('list4=',list4)
 
 
 
-
-
 ## generator: 
+## generator：为了节约内存，而保存一个“算法”，并不直接生成list。典型的例子：
+aa=[ x*x for x in range (100) ]
+bb=( x*x for x in range (100) )
+## 此处的bb不是list，因为是小括号；也不是tuple，因为括号里是公式，而非元素的列举。
+## 这两条命令执行完，aa会立即申请100个元素的list，而bb只是一个“100以内的完全平方数”的算法，不占内存。
+## 另一个典型的例子：
+def _odd_num():
+    n=1
+    yield n
+    while True:
+        n=n+2
+        yield n
+##这个函数用的不是return，而是yield，它就不再是函数，而是generator。generator不能用return返回值（只能用return中止执行）。这个generator代表的就是全部奇数，它是无限集合，所以不可能放在内存里。
+##它的运行逻辑是，每次运行到yield时，返回yield后跟的变量，且保存当前状态作为断点。执行next（）命令后从这个断点继续执行，直到下次yield。
 
+##调用方法，包括两种：
+## 1，
+for nn in _odd_num():
+  if nn<=20:
+   print(nn)
+  else:
+   break
 
-
-
+##2，
+od=_odd_num()        
+##注意这里必须先把_odd_num()赋值到generator 实例 aa，否则后面next(_odd_num())并不会迭代。因为_odd_num()是一个定义，而非一个实例。
+nn=1
+while nn<=20:
+ xx=next(od)
+ ## 这里必须赋值，因为next函数只在交互式界面会返回值，在脚本中就不显示了。
+ ## od.next()的写法是不对的。
+ print(xx)
+ nn=nn+1
 
 
 
