@@ -103,6 +103,16 @@ print('list4=',list4)
 
 
 
+
+## generator: 
+
+
+
+
+
+
+
+
 ## function can also be assigned to var:
 f=abs
 print(f(-1))   ##=abs(-1)=1
@@ -117,17 +127,18 @@ print(absAdd(-5,6,abs))
 
 
 
-## map-reduce
+## map-reduce and filter
 
 list1=[1,-2,3,-4]
 def f1(in1):
     in1=int(in1)
     return abs(in1)
 
-list2=map(f1,list1)
+list2=list(map(f1,list1))
 ## logic of map:
 ## list1=[a,b,c,d]
 ## list2=[f(a),f(b),f(c),f(d)]
+## Notice, the result of map is a list. so you must use list().
 print(list2)
 
 def f2(in1,in2):
@@ -142,7 +153,32 @@ result3=reduce(f2,list1)
 ## the function for reduce MUST accept 2 inputs
 ## list1=[a,b,c,d]
 ## result=f(f(f(a,b),c),d)
+## result of reduce is a variable, not a list.
 print(result3)
+
+
+## filter is a tool to filter a list with a function, keep the true item and delete the false item.
+
+def is_odd(n):
+    n=int(n)
+    return n%2==1
+    ## if n is odd, then return True, if n is even, return False.
+
+list4=list(filter(is_odd,[1,2,3,4,5]))
+## the structure of filter is nearly the same with map.
+print (list4)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
