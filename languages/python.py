@@ -25,6 +25,57 @@ def Hanno(n,a,b,c):
 Hanno(Level,'A','B','C')
 ## use functions
 
+def _cus_sum(*args):
+    result=0
+    for ii in args:
+        result=result+ii
+    return result
+## *args means the number of args is not defined. it works like a list/tuple.
+
+list_add=[1,2,3,4]
+res1=_cus_sum(*list_add)
+res2=_cus_sum(1,2,3,4,5,6)
+print(res1, res2)
+## keyword type parameter may be added later
+
+## default parameter:
+def func(x,y=2):
+    result=1
+    while ii<=y:
+        result=result*x
+        ii=ii+1
+    return result
+
+## in this function, if y is not input, its default value is 2
+
+
+
+
+
+## the difference between for loop and while loop:
+## for xx in list:
+## while yy<=100:
+## for loop in a list/tuple/dict etc.
+## while 'condition'
+
+
+
+
+
+## anonymous function (lambda)
+
+_square=lambda x: x*x
+_square(5)
+
+## equals:
+
+def _square(x):
+    return x*x
+_square(5)
+
+## lambda function can only return 1 simple equation, the biggest advantages are: 1, it doesn't need a function name, so won't cause any conflict; 2, convenient in some scenarios.
+_square_list=list(map(lambda x:x*x, range(5)))
+print (_square_list)
 
 
 
@@ -198,6 +249,18 @@ print (list4)
 
 
 
+## sorted: this function is an enhanced function for sort, it can define extra functions for sort.
+## sorted(listA,keys=func[,reverse=True])  ## notice the function name is "sorted", not "sort"
+## by default reverse=False
+
+score_list=[('Adam',65),('Jack',70),('Beth',80),('Dante',62)]
+
+def _rank_on_score(n):
+    return n[1]
+
+ranking=sorted(score_list,key=_rank_on_score,reverse=True)
+
+print(ranking)
 
 
 
