@@ -249,9 +249,15 @@ print (list4)
 
 
 
+
+## sort:
+example_list=[1,2,35,25,4]
+## sort(example_list) <<<< this is WRONG
+example_list.sort()     ## this is right
+example_list.sort(reverse=True)
+
 ## sorted: this function is an enhanced function for sort, it can define extra functions for sort.
-## sorted(listA,keys=func[,reverse=True])  ## notice the function name is "sorted", not "sort"
-## by default reverse=False
+## sorted(listA,keys=func[,reverse=True]) , by default reverse=False
 
 score_list=[('Adam',65),('Jack',70),('Beth',80),('Dante',62)]
 
@@ -262,9 +268,10 @@ ranking=sorted(score_list,key=_rank_on_score,reverse=True)
 
 print(ranking)
 
-
-
-
+## the difference between sort and sorted:
+## 1, gramma:
+## list1.sort()         sorted(list1)
+## 2, sorted WON'T change original list, but sort will permanantly change original list!
 
 
 
