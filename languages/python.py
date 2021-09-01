@@ -56,7 +56,7 @@ def func(x,y=2):
 ## for xx in list:
 ## while yy<=100:
 ## for loop in a list/tuple/dict etc.
-## while 'condition'
+## while loops when the 'condition' is met.
 
 
 
@@ -276,6 +276,23 @@ print(ranking)
 
 
 
+## 定义模块: 写完函数最后需要再加一条:
+## vim module.py
+def function():
+ pass
+
+if __name__=='__main__':
+ function()
+## 其中function是子函数的名字。这样定义好的模块后可以这样引用:
+## import module ##不会直接执行函数
+## module.function() ##直接执行该函数。
+
+##放置自定义模块的路径建议通过PYTHONPATH环境变量定义:
+## export PYTHONPATH=/path/to/your/project:$PYTHONPATH
+
+##导入子目录的模块可用import path.to.your.project.module
+##文件夹之间用.分开
+##每个文件夹下都必须有__init__.py文件
 
 
 
