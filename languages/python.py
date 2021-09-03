@@ -8,9 +8,6 @@
 Level=input('input level of the Hanno tower: ')
 ##Input parameters, it's always a string!
 
-isinstance(Level,int)
-##check if var Level is an integer or not
-
 def Hanno(n,a,b,c):
 	## define functions
 	n=int(n)
@@ -31,6 +28,20 @@ def _cus_sum(*args):
         result=result+ii
     return result
 ## *args means the number of args is not defined. it works like a list/tuple.
+## 此处的args允许输入若干个变量，反而不允许输入list了，因为list不是数值型变量，无法用它执行加法运算。
+# 但如果已有一个已保存想输入的数字的list或tuple，可以用*将list或tuple转化成变量列。例如_cus_sum(*list1)。
+
+
+def learnPara(*vargs,**kwargs):
+    print(vargs,kwargs)
+## 其中 *vargs 表示若干个变量（可以为0个，变量允许是list或tuple等）。而**kwargs则是生成一个dict（可以为空），然后以a='b',c='d'的形式输入，生成{a:'b',c:'d'}形式的dict。
+# 但注意，一旦开始了kwargs，就不允许再输入普通参数。
+# 典型的输入方式如下：
+learnPara(1,2,'M',4,[5,6],{1:2,3:4},a='b',c='d')
+#返回值为：
+#(1, 2, 'M', 4, [5, 6], {1: 2, 3: 4}) {'a': 'b', 'c': 'd'}
+## 但是： learnPara(1,2,3,4,[5,6],{1:2,3:4},a='b',c='d','ef','ghi') 这种写法就是错的，因为在kwargs之后又开始输入普通参数了。
+
 
 list_add=[1,2,3,4]
 res1=_cus_sum(*list_add)
@@ -308,3 +319,156 @@ sp.call(Command,shell=True)
 ## import math	
 ## from math import *			##like 'import math'
 ## from support import print_func 	## just import a part of the module
+
+
+
+
+
+## 定义类:
+class Student(object):      ##定义'类'，类名按惯例需要首字母大写，括号内写其父类的名字。object是所有类的始祖。
+    def __init__(self,name,gender,*other):       
+        ## 此处定义该类型!必须!包含的'属性'property。self是隐性属性，未来调用时不用写。以*开头的参数可以不包含因为它是可变参数，允许参数个数为0。
+        ## 若没有__init__则没有必须属性，可以建立空实例。
+        self.name=name
+        self.gender=gender
+        self.other=other
+    __slots__=('name','gender','age','other')       
+    ##__slots__用来限定允许赋值的属性。在这个列表之外的属性将不被允许。例如student.city='BeiJing'就将不再被接受。如果没有这一句意味着任何属性都可以赋值
+    def print_profile(self):        ##此处定义一个或多个该类的'方法'method。注意括号里的self。它也一样是隐性属性。
+        ## 此处还有一个值得注意的地方就是函数的入参类型，不仅可以是int、str、list等传统类型，还可以是某个类的实例！
+        ## 但是因为这个函数是在类的内部定义的，所以只能用作类的方法。而不能直接用print_profile(student3)的方式调用。
+        ## 如果该函数写在类的外面，就可以将某个类的实例作为入参传给它来执行了。
+        if self.other != ():        ##*other参数是一个tuple。()就是空tuple
+            addressFlag=False
+            paraLength=len(self.other)
+            for ii in range(paraLength):
+                for key in self.other[ii].keys():
+                    if key == 'addr':
+                        addressFlag=True
+            if addressFlag == True:
+                print('%s%s%s%s%s%s' % ("Name:", self.name,"; Gender:", self.gender, "; Address:", self.other[0]['addr']))
+            else:
+                print('%s%s%s%s' % ("Name:", self.name,"; Gender:", self.gender))
+        else:
+            print('%s%s%s%s' % ("Name:", self.name,"; Gender:", self.gender))
+
+## 定义子类：
+class GoodStudent(Student):     ## 括号里写父类的名字
+    pass
+
+## 子类可以继承父类的所有属性和方法，并在其上添加自己的特殊属性和方法。
+# 如果子类定义了和父类同名的属性或方法，在子类实例调用时，使用子类的属性或方法（向上覆盖）
+
+## 使用类赋值：
+student1=Student('Albert','male')
+student2=Student('Bill','male',{'addr':'BeiJing','hight':175,'score':80})
+student3=Student('charlie','male',{'hight':160})
+
+## 输出属性：
+## 调用方法：
+student1.print_profile()
+## 调用属性：
+student1.gender
+
+##在类外定义函数：
+def get_student_gender(student):
+    return student.gender
+
+get_student_gender(student3)
+
+## 允许输入没有在__init__里定义的属性，因为__init__里只定义!必须!属性。但是该属性可能与方法冲突，所以可能无法用标准方法处理：
+student3.score=65
+student3.score
+
+isinstance(Level,int)
+aaa=[1,2,3]
+isinstance(aaa,tuple)
+isinstance(student3,Student)
+##check parameter type. Type can be int, str, list, tuple, customized class etc... return value is bool: True or False.
+##用子类创建的示例，isinstance检查既是父类又是子类。
+##另外还有类似的函数type()，返回值不是布尔值，而是直接是类型名。例如：
+type(aaa)
+type(student2)
+
+## 通过dir函数可以查看某个实例或变量包含哪些属性或方法：
+dir('AAA')
+dir(student2)
+
+##也可以通过hasattr()函数判定某个实例或变量是否有某个属性（在dir列表里的就会返回True）。例如：
+hasattr(student2,'name')
+
+
+
+
+## 参数类型: 
+## 蛇形命名的参数：普通参数
+## 首字母大写驼峰命名： 普通类
+## 首字母小写驼峰命名： 普通实体
+## __xxx__: 特殊参数，一般是系统规定的，不要覆盖
+## __xxx: 私有参数，在类之外无法访问（有强行访问的办法但是强烈不建议）
+## XXXX (大写): 常量。也可以修改但约定俗成不要修改
+## _xxx: 普通参数但不希望被外界访问，也就是说，虽然是普通参数，但是建议使用者视同私有参数。
+
+
+
+
+
+## 闭包(closure)：
+## 定义：
+def outerFunc(outerPara):
+    def innerFunc(innerPara):
+        print(outerPara,innerPara)      
+        ##这里是闭包的核心点之一。按理说外层函数执行完之后，外层的参数outerPara会被释放。但此处通过内层函数引用它把它封在了内层函数里，这个参数就不会释放，从而构成一个数据+函数的实例。
+        ##这样的实例可以同时并存多个，封入不同的outerPara参数。
+    return innerFunc
+        ##这里是闭包的核心点之二。返回的是内层函数本身，而不是执行内层函数后的返回值（注意后面没有括号！）。
+        ##如果这里后面带了括号，返回的就是innerFunc的执行结果了。因为调用outerFunc时没有输入innerPara的地方，这么改就会报错了。
+
+##使用：
+testFunc=outerFunc('test1')
+testFunc
+##这一句的返回是一个函数，就是innerFunc，同时将'test1'作为outerPara封在了里面。但是不执行innerFunc。输出结果类似于：
+## <function __main__.outerFunc.<locals>.innerFunc(innerPara)>
+testFunc('test2')
+##因为testFunc实质上是封装了outerPara参数的innerFunc函数（不带括号！）所以这一句等效于innerFunc('test2')
+##甚至更直接的用法可以这样:
+outerFunc('test1')('test2')
+
+##装饰(decorator):
+## 简而言之，装饰是闭包调用的一种语法糖。格式如下：
+## 首先定义装饰函数：
+def testDeco(fn):
+    print('the function name is',fn.__name__)   ##这句写法不合适（1），下面会解释
+    def realDeco():
+        print ('starting function',fn.__name__)
+        fn()
+        print (fn.__name__,'function finished')
+    return realDeco
+
+## 然后定义真实函数，注意在定义真实函数的前面一行加上@装饰函数的名字：
+@testDeco
+def realFunc():
+    print ('hello world')
+
+## 这种写法的实质就是执行如下语句：
+## def realFunc():              ##先定义真实函数
+##     print ('hello world')
+## realFunc=testDeco(realFunc)  ##然后执行这个赋值语句。这里就可以看出来（1）不合适的原因。因为它并没有被封在子函数里面，所以它会被testDeco函数直接显式执行。
+
+## 接下来可以执行realFunc和realFunc()检查结果。（其实realFunc已经变成了realDeco的闭包了。）
+## realFunc
+## <function __main__.testDeco.<locals>.realDeco()>
+## 而realFunc()则是将reanFunc作为形参fn的实参传入然后执行realDeco()：
+## realFunc()
+## starting function realFunc
+## hello world
+## realFunc function finished
+
+
+
+## good references:
+#  https://zhuanlan.zhihu.com/p/27449649        <<<<best for closure
+#  https://www.the5fire.com/closure-in-python.html
+#  https://www.cnblogs.com/BlueSkyyj/p/8884236.html
+
+#  https://www.cnblogs.com/zh605929205/p/7704902.html   <<<<best for decorator
