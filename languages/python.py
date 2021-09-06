@@ -525,7 +525,7 @@ def func(funcPara):
 ## 执行func命令可见它其实已经变成了returnDeco函数：<function __main__.directDeco.<locals>.realDeco.<locals>.returnDeco(*args)>
 ## 而执行func(*args)的逻辑链相当于：
 ## directDeco("test deco para")(func)(funcPara) -> realDeco(func)(funcPara) (其中realDeco将"test deco para"这个入参闭包了) -> returnDeco(funcPara)
-## -> 所以funcPara实际上变成了realDeco的入参！这个funcPara就是*args！ 
+## -> 所以funcPara实际上变成了returnDeco的入参！这个funcPara就是*args！ 
 ## 最后，在执行returnDeco时，内部的func(args[1])这一句意味着args[1]必须存在，也就是funcPara[1]必须存在，而如果func只有一个入参，就会报错。
 ## 事实也是如此：
 ## func(123,45)
@@ -534,20 +534,43 @@ def func(funcPara):
 
 
 ## 装饰器装饰类
+## 示例1：装饰器本身无入参：
+
+class decoObject(object):
+    def __init__(self,func):    ##__init__()是在给某个函数decorator时（也就是下面的@语句时）被调用，用于初始化参数。如果装饰器本身不含参数则此处可以将被装饰的函数初始化。
+        self._func=func
+    def __call__(self,*args):   ##__call__()是在调用被decorator函数时被调用的。注意这种形式下，因为_func已经在__init__里定义了，所以这里只需要定义_func的入参args。
+        print('test')
+        self._func(args)
+
+@decoObject
+def testDecoObject(*args):
+    print('this is the output:' , args)
 
 
+##示例2：装饰器本身有入参：
+class decoObject2(object):
+    def __init__(self,*decoPara):   ## 装饰器本身有入参的init里只能定义它自己的入参，这里相当于带入参的函数式装饰器的最外层，它的入参除了self以外还有装饰器本身的入参。
+        self._decoPara=decoPara
+        ##  self._func=func         ## 和函数式装饰相同，因为被装饰函数和装饰函数自身的入参不能并列，所以此处不能先定义func，否则func就要出现在init的入参里和装饰器本身的入参并列。func的定义要放在call里面。
+    def __call__(self,func):        ## 这里相当于带入参的函数式装饰器的中间层，它的入参除了self以外，只有被包裹的函数func。
+        def actualDeco(*args):      ## 这里相当于带入参的函数式装饰器的最内层，它的入参是被包裹的函数func的入参。
+            print('test')
+            print(self._decoPara)   ## 可以通过类闭包把最外层装饰器的入参传递过来
+            func(args)
+        return actualDeco
 
+@decoObject2('test',123)     ##调用方式也类似于带入参的函数式装饰器
+def testDecoObject2(*args):
+    print("this is the actual function:",args)
 
-
-
-
-
-
-
+## 其逻辑链跟函数式装饰函数很像：
+## testDecoObject2(args) -> decoObject2('test',123)(testDecoObject2)(args) -> __call__(testDecoObject2)(args) （通过闭包包含_decoPara入参） -> actualDeco(args)
+## >>> testDecoObject2
+## <function decoObject2.__call__.<locals>.actualDeco at 0x7f52d5d6a7a0>
 
 ## @property 装饰
-## to be updated ... 
-
+## 该装饰（python自带，无需预先定义）的含义是将一个类的方法装饰成属性。
 
 ## good references:
 #  https://zhuanlan.zhihu.com/p/27449649        <<<<best for closure
@@ -556,3 +579,10 @@ def func(funcPara):
 
 #  https://www.cnblogs.com/zh605929205/p/7704902.html   <<<<best for decorator
 #  https://www.cnblogs.com/Jerry-Chou/archive/2012/05/23/python-decorator-explain.html    <<<<best for decorator
+
+
+
+
+
+
+
