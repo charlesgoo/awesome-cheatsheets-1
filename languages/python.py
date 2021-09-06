@@ -329,8 +329,11 @@ class Student(object):      ##定义'类'，类名按惯例需要首字母大写
     def __init__(self,name,gender,*other):       
         ## 此处定义该类型!必须!包含的'属性'property。self是隐性属性，未来调用时不用写。以*开头的参数可以不包含因为它是可变参数，允许参数个数为0。
         ## 若没有__init__则没有必须属性，可以建立空实例。
-        self.name=name
-        self.gender=gender
+        self.name=name      ##此处仍然允许有逻辑语句，例如：
+        if gender == 'F' or gender == 'M':
+            self.gender=gender
+        else:
+            self.gender='error'
         self.other=other
     __slots__=('name','gender','age','other')       
     ##__slots__用来限定允许赋值的属性。在这个列表之外的属性将不被允许。例如student.city='BeiJing'就将不再被接受。如果没有这一句意味着任何属性都可以赋值
@@ -361,8 +364,8 @@ class GoodStudent(Student):     ## 括号里写父类的名字
 
 ## 使用类赋值：
 student1=Student('Albert','male')
-student2=Student('Bill','male',{'addr':'BeiJing','hight':175,'score':80})
-student3=Student('charlie','male',{'hight':160})
+student2=Student('Bill','M',{'addr':'BeiJing','hight':175,'score':80})
+student3=Student('cinderella','F',{'hight':160})
 
 ## 输出属性：
 ## 调用方法：
@@ -443,7 +446,7 @@ def testDeco(fn):
         print ('starting function',fn.__name__)
         fn()
         print (fn.__name__,'function finished')
-    return realDeco
+    return realDeco     ##和闭包类似的，这里必须不带括号。
 
 ## 然后定义真实函数，注意在定义真实函数的前面一行加上@装饰函数的名字：
 @testDeco
@@ -464,6 +467,86 @@ def realFunc():
 ## hello world
 ## realFunc function finished
 
+def decorator_one():
+    pass
+def decorator_two():
+    pass
+
+@decorator_one
+@decorator_two
+def func():
+    pass
+##等效于    func = decorator_one(decorator_two(func))
+
+def decorator(arg1,arg2):
+    pass
+
+arg1=1
+arg2=2
+@decorator(arg1, arg2)
+def func():
+    pass
+##等效于 func = decorator(arg1,arg2)(func)
+
+## 上述例子中func函数都没有入参。而如果有入参，写法是这样的：
+## func(funcPara)
+## decorator_one(decorator_two(func))(funcPara)
+## decorator(arg1,arg2)(func)(funcPara)
+## 而不是 decorator_one(decorator_two(func(funcPara))) 或者
+## decorator(arg1,arg2)(func(funcPara))
+
+##带参数的decorator必须有多层内函数架构的原因：
+##从上面的等效式就能看出来，func = decorator(arg1,arg2)(func)，而不是 func = decorator (arg1,arg2,func)。
+# 定义decorator的时候必须得允许接受函数作为入参，所以要么无法接纳其他参数，成为decorator(func)的形式；要么并列接纳其他参数成为decorator(arg1,arg2,func)的形式。
+# 而这两种形式都是不对的。后者使用func调用时，并没有接纳arg1和arg2的入口（他们是decorator的入参，而不是func的入参）。所以如果decorator本身需要带参数，只能定义两层或更多的内层函数。例如：
+
+def directDeco(arg1):       ##最外层，直接装饰，此处带的是装饰函数自己的入参，它会通过闭包被保留。
+    def realDeco(func):     ##中间层，这是真正的装饰函数，如果装饰函数没有入参就可以直接用它作为最外层。注意这个真正的装饰函数的入参是被包裹的函数名func。
+        def returnDeco(funcPara):       ##最内层，和普通装饰函数的最内层类似。它的入参是被装饰的函数func的入参，不然后来执行func的时候获取不到正确的入参。当然，也可以任性点，这里的入参写*args，然后后面从*args中组合出最终func需要的入参并传给func。
+            print(arg1)
+            func(funcPara)
+        return returnDeco   ##注意这里和闭包、普通装饰函数类似，必须不带括号
+    return realDeco     ##必须不带括号
+
+def directDeco(arg1):       ##同上，略
+    def realDeco(func):     ##同上，略
+        def returnDeco(*args):       ##最内层，和普通装饰函数的最内层类似。任性版入参写法：
+            print(arg1)
+            func(args[1])   ##如果这么写意味着执行func时至少需要2个入参。下面有分析：
+        return returnDeco
+    return realDeco
+
+
+@directDeco("test deco para")
+def func(funcPara):
+    print(funcPara)
+
+## 此时func被重新定义： func = directDeco("test deco para")(func)，
+## 执行func命令可见它其实已经变成了returnDeco函数：<function __main__.directDeco.<locals>.realDeco.<locals>.returnDeco(*args)>
+## 而执行func(*args)的逻辑链相当于：
+## directDeco("test deco para")(func)(funcPara) -> realDeco(func)(funcPara) (其中realDeco将"test deco para"这个入参闭包了) -> returnDeco(funcPara)
+## -> 所以funcPara实际上变成了realDeco的入参！这个funcPara就是*args！ 
+## 最后，在执行returnDeco时，内部的func(args[1])这一句意味着args[1]必须存在，也就是funcPara[1]必须存在，而如果func只有一个入参，就会报错。
+## 事实也是如此：
+## func(123,45)
+##  test deco para
+##  45  <<打印的是funcPara[1]
+
+
+## 装饰器装饰类
+
+
+
+
+
+
+
+
+
+
+
+## @property 装饰
+## to be updated ... 
 
 
 ## good references:
@@ -472,3 +555,4 @@ def realFunc():
 #  https://www.cnblogs.com/BlueSkyyj/p/8884236.html
 
 #  https://www.cnblogs.com/zh605929205/p/7704902.html   <<<<best for decorator
+#  https://www.cnblogs.com/Jerry-Chou/archive/2012/05/23/python-decorator-explain.html    <<<<best for decorator
