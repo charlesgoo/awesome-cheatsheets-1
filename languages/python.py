@@ -362,6 +362,18 @@ class GoodStudent(Student):     ## 括号里写父类的名字
 ## 子类可以继承父类的所有属性和方法，并在其上添加自己的特殊属性和方法。
 # 如果子类定义了和父类同名的属性或方法，在子类实例调用时，使用子类的属性或方法（向上覆盖）
 
+class Person(object):
+    pass
+
+class Shanghai(object):
+    pass
+
+## 定义混合类：
+class MixedStudents(Student,Person,Shanghai):
+    pass
+##一个类可以继承多个类的属性和方法（多个父类）
+
+
 ## 使用类赋值：
 student1=Student('Albert','male')
 student2=Student('Bill','M',{'addr':'BeiJing','hight':175,'score':80})
@@ -382,6 +394,26 @@ get_student_gender(student3)
 ## 允许输入没有在__init__里定义的属性，因为__init__里只定义!必须!属性。但是该属性可能与方法冲突，所以可能无法用标准方法处理：
 student3.score=65
 student3.score
+
+## 类的一些特殊方法（系统默认自带方法）
+
+class myObject(object):
+    def __init__(self,name):        ##初始化属性
+        self.__name__=name
+    def __repr__(self):     ## 此方法的含义是，输入一个object实例名（不带括号），打印该方法返回值取代类似<__main__.myObject at 0x7fa66a8cb350>这样的不易读信息。
+        return "the name of the object is %s" % self.__name__
+    def __iter__(self):     ## 此方法用于迭代，返回自己
+        return self
+    def __next__():         ## 此方法就是迭代的next命令，返回想返回的值
+        return 1
+    def __getitem__(self,n):    ## 此方法用来将实例当作一个list，通过参数n获取第n项的值（调用方法也类似list）
+        return n
+    def __getattr__(self,attr):     ## 此方法本来就存在（事实上执行object.property就是执行object.__getattr__(property)），所以此处只是补充__getattr__方法，在正常的__getattr__无法工作时，执行这个。
+        if attr == 'score':
+            return 999
+    def __call__(self,*args):   ## 输入一个object实例名（带括号，或者说，执行这个实例）时，执行__call__方法。这个方法在装饰类中尤其重要。
+        print(args)
+
 
 isinstance(Level,int)
 aaa=[1,2,3]
@@ -583,6 +615,21 @@ def testDecoObject2(*args):
 
 
 
+#### 错误和调试：
+try:            ##此处开始需要测试的语句。其中任何一句碰到错误，则try程序段中在它后面的语句都不再执行，转而跳入相关的except语句段。
+    print(1)    ##IDE比较智能，这里想写一个语法错误，就直接被提示了。如果没有IDE，可以故意写一些错误语句来测试
+    print(2)
+    print(3)
+except SystemExit:      ##当遇到这种错误SystemExit时，执行这一段。except语句可以有一句或多句。但注意，一旦执行过一个except，就会跳过后续的其他except。
+    print(4)
+except ArithmeticError: ##遇到另一种错误ArithmeticError，执行这一段。注意，如果两种错误有父子关系，一定要把子写在前面。否则子错误永远无法捕获。
+    print(5)
+except BaseException as err:    ##遇到其他错误，执行这一段。BaseException是所有错误的父类所以一定能抓住。最后最好定义一下别名，然后打印，否则不知道到底错误是啥。
+    print(err)
+else:                   ##整个try代码段都没有遇到错误，执行这一段。注意：是没有遇到错误，而不是没有捕捉到错误。即使因为定义的except不合理而导致没有触发except，但有其他报错，仍然不会执行else语句段。
+    print(6)
+finally:                ##无论try代码段有没有遇到错误，最后都执行这一段。注意如果前面的except捕捉到了错误，则最后执行这一段；但如果前面的except语句写的不合理，没有捕捉到错误，则是先执行完这一段，再抛出报错。所以用BaseException作为最后的报错保护是很有必要的。
+    print(7)
 
 
-
+## 官方错误类型列表： https://docs.python.org/3/library/exceptions.html#exception-hierarchy
