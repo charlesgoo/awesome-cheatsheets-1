@@ -214,6 +214,17 @@ def absAdd (x,y,f):
 print(absAdd(-5,6,abs))
 
 
+## 字符串合并 （f""函数）：例如合并变量str1和str2（这两个都是字符串变量），有如下两种写法：
+str1='test1'
+str2='test2'
+str1+str2
+
+## 或者
+f"{str1}{str2}"
+
+## f函数有点类似于shell中的${para}，可以避免一些歧义。而且f函数中的所有字符会被原样保存，例如：
+f"{str1}+{str2}"
+##会输出test1+test2
 
 
 ## map-reduce and filter
@@ -633,3 +644,36 @@ finally:                ##无论try代码段有没有遇到错误，最后都执
 
 
 ## 官方错误类型列表： https://docs.python.org/3/library/exceptions.html#exception-hierarchy
+
+## 断言：就是简化版的try-except-else-finally，可以暂时不学。 表达式如下：
+## assert n==0, 'error'  意思就是n应该等于0，否则报错。
+
+
+
+
+
+
+## 同步IO编程：
+
+## 1，打开或关闭文件
+try:
+    mode='r'
+    f = open('/path/to/file', mode)
+    pass
+except BaseException as err:
+    print (err)
+finally:
+    if f:               ##意味着文件存在
+        f.close()       ##最终一定要关闭文件，否则写入操作不会落盘、内存不会释放
+
+## 另一种写法：
+mode='r'
+with open('/path/to/file', mode) as f:
+    pass
+## with语句会在最后自动关闭文件，使用比前一种方法更方便，但是抛出错误的部分不如前一种写法精确。
+
+## 2，读写模式：
+
+
+## best reference:
+## https://www.runoob.com/python/python-files-io.html
