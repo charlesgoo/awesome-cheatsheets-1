@@ -134,7 +134,8 @@ list2[-5] ## 5th element from backward
 
 
 ##Iteration:
-from collections.abc import Iterable 
+from collections.abc import Iterable
+from os import O_TMPFILE 
 ## upper/lower case sensitive.
 var='abcde'
 isinstance(var,Iterable)
@@ -657,23 +658,68 @@ finally:                ##无论try代码段有没有遇到错误，最后都执
 
 ## 1，打开或关闭文件
 try:
+    filePath='./init.sh'
     mode='r'
-    f = open('/path/to/file', mode)
-    pass
+    f = False   ## 初始化f，以免后面的if f:语句找不到变量
+    f = open(filePath, mode)
+    f.read()
 except BaseException as err:
     print (err)
 finally:
-    if f:               ##意味着文件存在
-        f.close()       ##最终一定要关闭文件，否则写入操作不会落盘、内存不会释放
+    if f:               ##意味着文件打开成功。
+        f.close()       ##最终一定要关闭文件，否则写入操作不会落盘、内存不会释放。也就是说，无论前面的命令执行成功与否，都一定要执行这一句，只能用finally合适。
 
-## 另一种写法：
+## 另一种写法（官方装饰函数？）：
 mode='r'
-with open('/path/to/file', mode) as f:
+filePath='./init.sh'
+with open(filePath, mode) as f:
+    print(f.read(20))
     pass
 ## with语句会在最后自动关闭文件，使用比前一种方法更方便，但是抛出错误的部分不如前一种写法精确。
 
-## 2，读写模式：
+## 尝试过自己写装饰函数，但因为参数关系比较复杂，失败了。关键就在于内部调用的函数需要在内部再执行一次open()命令并赋值。会产生新的打开文件句柄，这个装饰函数进不去。
+
+
+
+## 2，读写模式和定位：
+## open(file,mode)中的mode有如下几种形式：
+## 'r'：读
+## 'w'：写     ----这个非常危险，命令写错或者没有write命令都会导致文件被置空...除非特别确定，否则尽量不要用这个命令写文件。下面的w+同理。
+## 'a'：追加  ----追加模式下写内容也用file.write('str')命令。但是会自动定位到文件末尾。
+## 'r+' == r+w（可读可写，文件若不存在就报错(IOError)）  ----这种模式允许以'改写'模式覆盖写入文件，他不会直接清空文件，而是只修改定位处的内容。
+## 'w+' == w+r（可写可读，文件若不存在就创建）   ----这个非常危险，命令写错或者没有write命令都会导致文件被置空...除非特别确定，否则尽量不要用这个命令写文件。
+## 'a+' == a+r（可追加可读，文件若不存在就创建）
+## 对应的，如果是二进制文件，就都加一个b：
+## 'rb'　　'wb'　　'ab'　　'rb+'　　'wb+'　　'ab+'
+
+## 读取和定位：
+## 该命令的写和追加都无法定位。写永远是从开头开始写（会删除所有的原有内容！！相当于完全重写该文件，太坑了...），追加永远是追加到最后。
+## 读的时候，是按照字符指针读的。例如刚开始指针在文件头，read(20)读了20个字符，指针就停在20处，下次read(20)就是读取第21到第40个字符。如果用默认的read()方法是读取本文件的所有内容，然后指针在文件的最后。
+## 可以用file.tell()方法查看指针位置，也可以用file.seek()更改指针位置。具体格式是file.seek(offset,from=0)，offset意味着偏移多少字符，from只有三种情况：0：文件头（默认），1：当前位置；2:文件尾。
+
+## 除read外，还有readline和readlines方法。
+## file.readline(): 从当前字符指针开始读取到本行末，并把指针停留在本行末。下次再执行file.readline()就是读取下一行了。
+## file.readlines(): 读取当前文件的所有内容，并以每行为一个元素（包括行末的\n在内），形成一个list。
+## 所以read和readlines方法对大文件慎用，可能会把内存撑爆。应该用read(size)或readline()替代。
 
 
 ## best reference:
 ## https://www.runoob.com/python/python-files-io.html
+
+
+
+
+## python的os模块：
+## 暂时不重点看。因为他的命令跟操作系统还不一样。可以考虑用执行脚本作为替代？例如：
+import os
+os.path.abspath('.')    ## == pwd
+os.mkdir('./testdir')   ## == mkdir
+os.listdir('.')         ## == ls
+
+
+
+## python的json模块：
+import json
+
+
+
