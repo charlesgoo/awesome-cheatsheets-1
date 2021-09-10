@@ -721,5 +721,19 @@ os.listdir('.')         ## == ls
 ## python的json模块：
 import json
 
+## dict转json:
+std={'a':12,'b':50,'c':100}
+json.dumps(std)
 
+## object转json:
+class Student(object):
+    def __init__(self,name):
+        self.name=name
 
+std=Student('Bob')
+std.gender='M'
+std.score=95
+
+##  json.dumps(std)  直接用json.dumps作用于一个object实例是不行的，需要将这个object实例用.__dict__方法转换成dict才可以：
+##  如下示例中，std为需要转换的实例，default=后跟转换函数即可。因为此处转换规则比较简单，所以可以直接用lambda函数。
+json.dumps(std,default=lambda x : x.__dict__)
