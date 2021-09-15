@@ -59,7 +59,14 @@ def func(x,y=2):
 
 ## in this function, if y is not input, its default value is 2
 
-
+## 逻辑表达式：
+a,b,c,d,e,temp_list=1,2,3,4,5,[3,4,5,6]
+if (a==1) and (b>=2):
+    if (c<5) or (d!=6):
+        if not (e == 7):
+            if 5 not in temp_list:  ## 判定某元素是否在list内
+                pass
+## 除了!= 以外，逻辑否都用not，因为用!会被判定为需要执行shell命令。
 
 
 
@@ -100,6 +107,17 @@ list1.insert(1,'2nd')  ## insert an element to index
 print(list1)
 list1.pop(2)  ## delete an element at index (last element by default)
 print(list1)
+##删除的另外一种命令：
+del list1[2]        ##这个命令也适合于删除dict的元素，但不能删除tuple元素因为tuple不可改写。删除dict元素的格式为： 
+dict1={'key1':'value1','key2':'value2'}
+key1='key2'
+del dict1[key1]
+##按内容而非按排序删除：
+value='test'
+list1.remove(value)     ##将该list的值为value的第一项删除。若要删除所有的值为value的项则必须用循环：
+
+while value in list1:
+    list1.remove(value)
 
 tuple1=(1,2,3,'abc')
 print('print format %2s %2d' % (tuple1[1],tuple1[2]))
@@ -109,8 +127,6 @@ dict1={'mich':50,'dean':45,'loren':'score'}
 dict1['ida']=550  ## add elements like this
 print(dict1['loren'])
 ##dict_name[key_n]=value_n
-
-
 
 
 
@@ -142,12 +158,21 @@ isinstance(var,Iterable)
 ## confirm if a variable (including int/str/list/tuple...) is iterable or not.
 
 dict1={1:2,3:4,5:6}
-for k in dict1: ## for keys. or: for k in dict1.keys():
+for k in dict1: ## by default, this is for keys. or: for k in dict1.keys():
     print (k)
-for v in dict1.values():    ## for values
+for v in dict1.values():    ## for values.
     print (v)
-for k,v in dict1.items():    ## for key-value pairs
+for k,v in dict1.items():    ## for key-value pairs.
     print (k,v)
+
+## 如果要获取的kv对可能不存在，则用.get()方法：
+dict1.get('score','Score not assigned')     ## 获取键'score'对应的键值，若不存在，则返回后面的字符串、变量。
+## 可以将dict转换成list：
+list(dict1)
+list(dict1.values())
+list(dict1.items())
+
+## list、tuple、dict都可以互相嵌套。
 
 ## multi-var iteration:
 for x,y in [(1,2),(3,4),(5,6)]:
@@ -187,7 +212,7 @@ for nn in _odd_num():
   if nn<=20:
    print(nn)
   else:
-   break
+   break        ## break 和 continue，与shell逻辑类似，只退出当前循环层。
 
 ##2，
 od=_odd_num()        
@@ -296,6 +321,7 @@ print(ranking)
 ## list1.sort()         sorted(list1)
 ## 2, sorted WON'T change original list, but sort will permanantly change original list!
 
+example_list.reverse()  ##将列表永久性反转。
 
 
 
