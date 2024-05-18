@@ -1,0 +1,30 @@
+##stop firewall:
+netsh advfirewall set allprofiles state off
+
+##check firewall status:
+netsh advfirewall show allprofiles
+
+##reset firewall config (not recommended):
+netsh firewall reset
+
+##export group policy (password policy and audit policy)
+secedit /export /CFG <path_to_file>  ##Most recommended
+secedit /export [/db filename] [/mergedpolicy] /cfg filename [/areas area1 area2...] [/log filename]  ##Full command
+## 参数：
+## /db filename - 指定要导出数据的数据库。如果没有指定，将使用系统安全数据库。
+## /cfg filename - 指定要导出数据库内容的安全模板。
+## /mergedpolicy - 合并并且导出域和本地策略安全设置。
+## /areas - 指定要应用到系统的安全性范围。如果没有指定此参数，在数据库中定义的所有安全性设置都将应用到系统中。 要配置多个范围，用空格将它们分开。下列安全性范围是受支持的:
+## * SECURITYPOLICY - 包括帐户策略，审核策略，事件日志设置和安全选项。
+## * GROUP_MGMT - 包括受限制的组设置
+## * USER_RIGHTS - 包括用户权限分配
+## * REGKEYS - 包括注册表权限
+## * FILESTORE - 包括文件系统权限
+## * SERVICES - 包括系统服务设置
+## /log filename - 指定要记录导出操作状态的文件。
+
+##make modified group policy work:
+secedit /configure /db secure.sdb /cfg <path_to_file>
+## 1，导入并生效的命令是/configure，而不是/import
+## 2，/db参数不可忽略。后面跟着的那个文件可以不存在，该命令会自动生成
+## 3，配置文件未修改的部分仍然需要保留，而不能删除，否则导入会出错。
